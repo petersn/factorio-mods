@@ -1,0 +1,3 @@
+
+require("prototypes.superChest")
+

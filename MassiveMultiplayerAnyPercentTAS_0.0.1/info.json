@@ -1,0 +1,8 @@
+{
+    "name": "MassiveMultiplayerAnyPercentTAS",
+    "version": "0.0.1",
+    "title": "Massive multiplayer any% TAS",
+    "description": "Control mod for Peter Schmidt-Nielsen's massive multiplayer any@.",
+    "author": "Peter Schmidt-Nielsen",
+    "factorio_version": "1.1"
+}
