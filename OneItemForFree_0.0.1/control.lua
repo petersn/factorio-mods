@@ -1,8 +1,7 @@
--- FIXME: There seem to be bugs around saving and reloading.
 
-local players_given_super_chest = {}
-local player_choices = {}
-local super_chest_item_name = {}  -- Table to keep track of the item each chest is supplying infinitely
+global.players_given_super_chest = {}
+global.player_choices = {}
+global.super_chest_item_name = {}  -- Table to keep track of the item each chest is supplying infinitely
 
 -- -- Give player a super chest on game start
 -- script.on_event(defines.events.on_player_respawned, function(event)
@@ -20,7 +19,7 @@ local super_chest_item_name = {}  -- Table to keep track of the item each chest 
 --     local entity = event.entity
 --     if entity and entity.name == "super-chest" then
 --         -- If there's an item inside and it's not tracked, set it as the infinite item
---         if not super_chest_item_name[entity.unit_number] then
+--         if not global.super_chest_item_name[entity.unit_number] then
 --             show_item_picker_gui(event.player_index)
 --         end
 --     end
@@ -55,7 +54,7 @@ script.on_event(defines.events.on_gui_elem_changed, function(event)
         local chosen_item = changed_element.elem_value  -- Get the chosen item name
 
         if chosen_item then
-            player_choices[player.index] = chosen_item
+            global.player_choices[player.index] = chosen_item
 
             player.print("You have chosen " .. chosen_item .. " to be supplied infinitely by your limitless chest!")
 
@@ -72,9 +71,9 @@ script.on_event(defines.events.on_built_entity, function(event)
     local player = game.players[event.player_index]
     local entity = event.created_entity
     if entity and entity.name == "super-chest" then
-        local chosen_item = player_choices[player.index]
+        local chosen_item = global.player_choices[player.index]
         if chosen_item then
-            super_chest_item_name[entity.unit_number] = chosen_item
+            global.super_chest_item_name[entity.unit_number] = chosen_item
         end
     end
 end)
@@ -104,7 +103,7 @@ script.on_event(defines.events.on_tick, function(event)
     -- if event.tick % 5 == 0 or event.tick < 60 then
         -- Try to find any players who haven't been given a super chest, and give them one if relevant.
         for _, player in pairs(game.players) do
-            if not players_given_super_chest[player.index] then
+            if not global.players_given_super_chest[player.index] then
                 local inv = player.get_main_inventory()
                 if inv ~= nil then
                     -- Check if the player already has a super chest.
@@ -118,7 +117,7 @@ script.on_event(defines.events.on_tick, function(event)
                     end
                     if not has_super_chest then
                         inv.insert{name="super-chest", count=1}
-                        players_given_super_chest[player.index] = true
+                        global.players_given_super_chest[player.index] = true
                         show_item_picker_gui(player.index)
                     end
                 end
@@ -127,7 +126,7 @@ script.on_event(defines.events.on_tick, function(event)
         for _, surface in pairs(game.surfaces) do
             local chests = surface.find_entities_filtered{name="super-chest"}
             for _, chest in pairs(chests) do
-                local item_name = super_chest_item_name[chest.unit_number]
+                local item_name = global.super_chest_item_name[chest.unit_number]
                 if item_name then
                     local inv = chest.get_inventory(defines.inventory.chest)
                     local insert_count = inv.get_insertable_count(item_name)
