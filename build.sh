@@ -2,9 +2,9 @@
 set -x
 set -e
 
-rm -f OneItemForFree_0.0.1.zip
-zip -r OneItemForFree_0.0.1.zip OneItemForFree_0.0.1/
-cp OneItemForFree_0.0.1.zip ~/.factorio/mods/
+rm -f OneItemForFree_0.0.3.zip
+zip -r OneItemForFree_0.0.3.zip OneItemForFree_0.0.3/
+cp OneItemForFree_0.0.3.zip ~/.factorio/mods/
 
 rm -f MassiveMultiplayerAnyPercentTAS_0.0.1.zip
 zip -r MassiveMultiplayerAnyPercentTAS_0.0.1.zip MassiveMultiplayerAnyPercentTAS_0.0.1/
