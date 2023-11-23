@@ -52,7 +52,11 @@ script.on_event(defines.events.on_built_entity, function(event)
     if entity and entity.name == "super-chest" then
         local chosen_item = global.player_choices[player.index]
         if chosen_item then
-            global.super_chest_item_name[entity.unit_number] = chosen_item
+            global.super_chest_item_name[entity.unit_number] = {
+                chosen_item = chosen_item,
+                position = entity.position,
+                surface = entity.surface.name,
+            }
         end
     end
 end)
@@ -89,17 +93,23 @@ script.on_event(defines.events.on_tick, function(event)
             end
         end
     end
-    for _, surface in pairs(game.surfaces) do
-        local chests = surface.find_entities_filtered{name="super-chest"}
-        for _, chest in pairs(chests) do
-            local item_name = global.super_chest_item_name[chest.unit_number]
-            if item_name then
-                local inv = chest.get_inventory(defines.inventory.chest)
-                local insert_count = inv.get_insertable_count(item_name)
-                if insert_count > 0 then
-                    inv.insert{name=item_name, count=insert_count}
-                end
+    -- Refill all chests that still exist.
+    local chests_to_remove = {}
+    for unit_number, triple in pairs(global.super_chest_item_name) do
+        local surface = game.surfaces[triple.surface]
+        local chest = surface.find_entity("super-chest", triple.position)
+        if chest and chest.valid and chest.unit_number == unit_number and triple.chosen_item then
+            local inv = chest.get_inventory(defines.inventory.chest)
+            local insert_count = inv.get_insertable_count(triple.chosen_item)
+            if insert_count > 0 then
+                inv.insert{name=triple.chosen_item, count=insert_count}
             end
+        else
+            table.insert(chests_to_remove, unit_number)
         end
+    end
+    -- Remove the chests that no longer exist.
+    for _, unit_number in pairs(chests_to_remove) do
+        global.super_chest_item_name[unit_number] = nil
     end
 end)
